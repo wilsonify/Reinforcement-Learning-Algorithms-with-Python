@@ -1,6 +1,15 @@
 import numpy as np
 import gym
 
+# create the environment
+env = gym.make("FrozenLake-v1")
+# enwrap it to have additional information from it
+env = env.unwrapped
+
+# spaces dimension
+nA = env.action_space.n
+nS = env.observation_space.n
+
 
 def eval_state_action(V, s, a, gamma=0.99):
     return np.sum([p * (rew + gamma * V[next_s]) for p, next_s, rew, _ in env.P[s][a]])
@@ -60,14 +69,6 @@ def run_episodes(env, policy, num_games=100):
 
 
 if __name__ == "__main__":
-    # create the environment
-    env = gym.make("FrozenLake-v0")
-    # enwrap it to have additional information from it
-    env = env.unwrapped
-
-    # spaces dimension
-    nA = env.action_space.n
-    nS = env.observation_space.n
 
     # initializing value function and policy
     V = np.zeros(nS)
