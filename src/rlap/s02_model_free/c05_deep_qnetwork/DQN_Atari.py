@@ -6,8 +6,7 @@ from collections import deque
 import time
 import sys
 
-from atari_wrappers import make_env
-
+from rlap.s02_model_free.c05_deep_qnetwork.atari_wrappers import make_env
 
 gym.logger.set_level(40)
 

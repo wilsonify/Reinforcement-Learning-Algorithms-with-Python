@@ -45,19 +45,19 @@ def run_episodes(env, Q, num_episodes=100, to_print=False):
                 tot_rew.append(game_rew)
 
     if to_print:
-        print("Mean score: %.3f of %i games!" % (np.mean(tot_rew), num_episodes))
+        print(f"Mean score: {np.mean(tot_rew):.3f} of {num_episodes} games!")
 
     return np.mean(tot_rew)
 
 
 def Q_learning(
-    env, lr=0.01, num_episodes=10000, eps=0.3, gamma=0.95, eps_decay=0.00005
+        env, lr=0.01, num_episodes=10000, eps=0.3, gamma=0.95, eps_decay=0.00005
 ):
     nA = env.action_space.n
     nS = env.observation_space.n
 
     # Initialize the Q matrix
-    # Q: matrix nS*nA where each row represent a state and each colums represent a different action
+    # Q: matrix nS*nA where each row represent a state and each columns represent a different action
     Q = np.zeros((nS, nA))
     games_reward = []
     test_rewards = []
@@ -82,7 +82,7 @@ def Q_learning(
 
             # Q-learning update the state-action value (get the max Q value for the next state)
             Q[state][action] = Q[state][action] + lr * (
-                rew + gamma * np.max(Q[next_state]) - Q[state][action]
+                    rew + gamma * np.max(Q[next_state]) - Q[state][action]
             )
 
             state = next_state
@@ -130,7 +130,7 @@ def SARSA(env, lr=0.01, num_episodes=10000, eps=0.3, gamma=0.95, eps_decay=0.000
             next_action = eps_greedy(Q, next_state, eps)
             # SARSA update
             Q[state][action] = Q[state][action] + lr * (
-                rew + gamma * Q[next_state][next_action] - Q[state][action]
+                    rew + gamma * Q[next_state][next_action] - Q[state][action]
             )
 
             state = next_state
