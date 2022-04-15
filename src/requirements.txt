@@ -1,0 +1,7 @@
+numpy
+gym
+tensorflow
+pyopencv2
+ple
+scipy
+contextlib

@@ -1,0 +1,9 @@
+[submodule "external/gym"]
+	path = external/gym
+	url = https://github.com/openai/gym.git
+[submodule "external/pybox2d"]
+	path = external/pybox2d
+	url = https://github.com/pybox2d/pybox2d
+[submodule "external/gym-duckietown"]
+	path = external/gym-duckietown
+	url = https://github.com/duckietown/gym-duckietown.git
