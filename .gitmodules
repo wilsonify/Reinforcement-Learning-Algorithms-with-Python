@@ -7,3 +7,9 @@
 [submodule "external/gym-duckietown"]
 	path = external/gym-duckietown
 	url = https://github.com/duckietown/gym-duckietown.git
+[submodule "external/roboschool"]
+	path = external/roboschool
+	url = https://github.com/openai/roboschool
+[submodule "external/bullet3"]
+	path = external/bullet3
+	url = https://github.com/olegklimov/bullet3
