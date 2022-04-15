@@ -42,12 +42,12 @@ def make_CartPole_better():
 
             # when is done, print the cumulative reward of the game and reset the environment
             if done:
-                print('Episode %d finished, reward:%d' % (i, game_rew))
+                print("Episode %d finished, reward:%d" % (i, game_rew))
                 env.reset()
 
 
 def show_CartPole():
-    env = gym.make('CartPole-v1')
+    env = gym.make("CartPole-v1")
     print(env.observation_space)
     print(env.action_space)
     print(env.action_space.sample())

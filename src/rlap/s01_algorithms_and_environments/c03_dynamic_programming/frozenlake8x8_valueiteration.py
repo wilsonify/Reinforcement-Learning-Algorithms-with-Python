@@ -1,13 +1,15 @@
 import numpy as np
 import gym
 
+
 def eval_state_action(V, s, a, gamma=0.99):
-    return np.sum([p * (rew + gamma*V[next_s]) for p, next_s, rew, _ in env.P[s][a]])
+    return np.sum([p * (rew + gamma * V[next_s]) for p, next_s, rew, _ in env.P[s][a]])
+
 
 def value_iteration(eps=0.0001):
-    '''
+    """
     Value iteration algorithm
-    '''
+    """
     V = np.zeros(nS)
     it = 0
 
@@ -22,15 +24,16 @@ def value_iteration(eps=0.0001):
         if delta < eps:
             break
         else:
-            print('Iter:', it, ' delta:', np.round(delta, 5))
+            print("Iter:", it, " delta:", np.round(delta, 5))
         it += 1
 
     return V
 
+
 def run_episodes(env, V, num_games=100):
-    '''
+    """
     Run some test games
-    '''
+    """
     tot_rew = 0
     state = env.reset()
 
@@ -41,16 +44,16 @@ def run_episodes(env, V, num_games=100):
             next_state, reward, done, _ = env.step(action)
 
             state = next_state
-            tot_rew += reward 
+            tot_rew += reward
             if done:
                 state = env.reset()
 
-    print('Won %i of %i games!'%(tot_rew, num_games))
+    print("Won %i of %i games!" % (tot_rew, num_games))
 
-            
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # create the environment
-    env = gym.make('FrozenLake-v0')
+    env = gym.make("FrozenLake-v0")
     # enwrap it to have additional information from it
     env = env.unwrapped
 
@@ -63,5 +66,4 @@ if __name__ == '__main__':
     # test the value function on 100 games
     run_episodes(env, V, 100)
     # print the state values
-    print(V.reshape((4,4)))
-
+    print(V.reshape((4, 4)))

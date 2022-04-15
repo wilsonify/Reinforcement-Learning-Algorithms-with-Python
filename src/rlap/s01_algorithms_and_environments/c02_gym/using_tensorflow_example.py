@@ -54,7 +54,7 @@ def tf_example():
     tf.compat.v1.reset_default_graph()
 
     # #### Constant
-    a = tf.constant([1.0, 1.1, 2.1, 3.1], dtype=tf.float32, name='a_const')
+    a = tf.constant([1.0, 1.1, 2.1, 3.1], dtype=tf.float32, name="a_const")
     print(a)
 
     # #### Placeholder
@@ -91,14 +91,17 @@ def tf_example():
         "first_variable",
         shape=[1, 3],
         dtype=tf.float32,
-        initializer=tf.compat.v1.glorot_uniform_initializer
+        initializer=tf.compat.v1.glorot_uniform_initializer,
     )
 
     # variable initialized with constant values
     init_val = np.array([4, 5])
     var2 = tf.compat.v1.get_variable(
-        "second_variable", shape=[1, 2], dtype=tf.int32,
-        initializer=tf.constant_initializer(init_val))
+        "second_variable",
+        shape=[1, 2],
+        dtype=tf.int32,
+        initializer=tf.constant_initializer(init_val),
+    )
 
     # initialize all the variables
     session.run(tf.compat.v1.global_variables_initializer())
@@ -107,14 +110,18 @@ def tf_example():
     print(session.run(var2))
 
     # not trainable variable
-    var2 = tf.compat.v1.get_variable("variable", shape=[1, 2], trainable=False, dtype=tf.int32)
+    var2 = tf.compat.v1.get_variable(
+        "variable", shape=[1, 2], trainable=False, dtype=tf.int32
+    )
     print(tf.compat.v1.global_variables())
 
     # #### Graph
     tf.compat.v1.reset_default_graph()
-    const1 = tf.compat.v1.constant(3.0, name='constant1')
+    const1 = tf.compat.v1.constant(3.0, name="constant1")
     var = tf.compat.v1.get_variable("variable1", shape=[1, 2], dtype=tf.float32)
-    var2 = tf.compat.v1.get_variable("variable2", shape=[1, 2], trainable=False, dtype=tf.float32)
+    var2 = tf.compat.v1.get_variable(
+        "variable2", shape=[1, 2], trainable=False, dtype=tf.float32
+    )
 
     op1 = const1 * var
     op2 = op1 + var2
@@ -138,8 +145,18 @@ def tf_example():
     y = np.random.normal(loc=W * X + b, scale=2.0, size=len(X))
 
     # create the placeholders
-    x_ph = tf.compat.v1.placeholder(shape=[None, ], dtype=tf.float32)
-    y_ph = tf.compat.v1.placeholder(shape=[None, ], dtype=tf.float32)
+    x_ph = tf.compat.v1.placeholder(
+        shape=[
+            None,
+        ],
+        dtype=tf.float32,
+    )
+    y_ph = tf.compat.v1.placeholder(
+        shape=[
+            None,
+        ],
+        dtype=tf.float32,
+    )
 
     # create the variables.
     v_weight = tf.compat.v1.get_variable("weight", shape=[1], dtype=tf.float32)
@@ -163,10 +180,14 @@ def tf_example():
 
         # print epoch number and loss
         if ep % 40 == 0:
-            print('Epoch: %3d, MSE: %.4f, W: %.3f, b: %.3f' % (
-                ep, train_loss, session.run(v_weight), session.run(v_bias)))
+            print(
+                "Epoch: %3d, MSE: %.4f, W: %.3f, b: %.3f"
+                % (ep, train_loss, session.run(v_weight), session.run(v_bias))
+            )
 
-    print('Final weight: %.3f, bias: %.3f' % (session.run(v_weight), session.run(v_bias)))
+    print(
+        "Final weight: %.3f, bias: %.3f" % (session.run(v_weight), session.run(v_bias))
+    )
 
     # #### .. with TensorBoard
     tf.compat.v1.reset_default_graph()
@@ -181,8 +202,18 @@ def tf_example():
     y = np.random.normal(loc=W * X + b, scale=2.0, size=len(X))
 
     # create the placeholders
-    x_ph = tf.placeholder(shape=[None, ], dtype=tf.float32)
-    y_ph = tf.placeholder(shape=[None, ], dtype=tf.float32)
+    x_ph = tf.placeholder(
+        shape=[
+            None,
+        ],
+        dtype=tf.float32,
+    )
+    y_ph = tf.placeholder(
+        shape=[
+            None,
+        ],
+        dtype=tf.float32,
+    )
 
     # create the variables.
     v_weight = tf.get_variable("weight", shape=[1], dtype=tf.float32)
@@ -197,29 +228,37 @@ def tf_example():
     # optimizer
     opt = tf.compat.v1.train.AdamOptimizer(0.4).minimize(loss)
 
-    tf.summary.scalar('MSEloss', loss)
-    tf.summary.histogram('model_weight', v_weight)
-    tf.summary.histogram('model_bias', v_bias)
+    tf.summary.scalar("MSEloss", loss)
+    tf.summary.histogram("model_weight", v_weight)
+    tf.summary.histogram("model_bias", v_bias)
     all_summary = tf.compat.v1.summary.merge_all()
 
     now = datetime.now()
     clock_time = "{}_{}.{}.{}".format(now.day, now.hour, now.minute, now.second)
-    file_writer = tf.compat.v1.summary.FileWriter('log_dir/' + clock_time, tf.compat.v1.get_default_graph())
+    file_writer = tf.compat.v1.summary.FileWriter(
+        "log_dir/" + clock_time, tf.compat.v1.get_default_graph()
+    )
 
     session.run(tf.compat.v1.global_variables_initializer())
 
     # loop to train the parameters
     for ep in range(210):
         # run the optimizer and get the loss
-        train_loss, _, train_summary = session.run([loss, opt, all_summary], feed_dict={x_ph: X, y_ph: y})
+        train_loss, _, train_summary = session.run(
+            [loss, opt, all_summary], feed_dict={x_ph: X, y_ph: y}
+        )
         file_writer.add_summary(train_summary, ep)
 
         # print epoch number and loss
         if ep % 40 == 0:
-            print('Epoch: %3d, MSE: %.4f, W: %.3f, b: %.3f' % (
-                ep, train_loss, session.run(v_weight), session.run(v_bias)))
+            print(
+                "Epoch: %3d, MSE: %.4f, W: %.3f, b: %.3f"
+                % (ep, train_loss, session.run(v_weight), session.run(v_bias))
+            )
 
-    print('Final weight: %.3f, bias: %.3f' % (session.run(v_weight), session.run(v_bias)))
+    print(
+        "Final weight: %.3f, bias: %.3f" % (session.run(v_weight), session.run(v_bias))
+    )
     file_writer.close()
 
 
