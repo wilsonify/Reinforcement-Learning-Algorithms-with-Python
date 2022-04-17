@@ -13,3 +13,6 @@
 [submodule "external/bullet3"]
 	path = external/bullet3
 	url = https://github.com/olegklimov/bullet3
+[submodule "external/PyGame-Learning-Environment"]
+	path = external/PyGame-Learning-Environment
+	url = https://github.com/ntasfi/PyGame-Learning-Environment
