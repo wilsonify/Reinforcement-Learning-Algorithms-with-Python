@@ -1,6 +1,7 @@
 import numpy as np
 import gym
-from rlap.s02_model_free.c04_qlearning_sarsa.SARSA_Q_learning_Taxi_v2 import Q_learning, SARSA
+from rlap.s02_model_free.c04_qlearning_sarsa.q_learning_taxi import Q_learning
+from rlap.s02_model_free.c04_qlearning_sarsa.sarsa_taxi import SARSA
 
 
 def test_smoke():
