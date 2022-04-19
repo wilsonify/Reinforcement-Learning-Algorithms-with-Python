@@ -16,3 +16,6 @@
 [submodule "external/PyGame-Learning-Environment"]
 	path = external/PyGame-Learning-Environment
 	url = https://github.com/ntasfi/PyGame-Learning-Environment
+[submodule "external/baselines"]
+	path = external/baselines
+	url = https://github.com/openai/baselines.git
