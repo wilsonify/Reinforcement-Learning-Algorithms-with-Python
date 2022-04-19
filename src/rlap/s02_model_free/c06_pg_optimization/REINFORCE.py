@@ -1,5 +1,7 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.framework.ops import disable_eager_execution
+
 import gym
 from datetime import datetime
 import time
@@ -10,15 +12,15 @@ def mlp(x, hidden_layers, output_size, activation=tf.nn.relu, last_activation=No
     Multi-layer perceptron
     """
     for l in hidden_layers:
-        x = tf.layers.dense(x, units=l, activation=activation)
-    return tf.layers.dense(x, units=output_size, activation=last_activation)
+        x = tf.compat.v1.layers.dense(x, units=l, activation=activation)
+    return tf.compat.v1.layers.dense(x, units=output_size, activation=last_activation)
 
 
 def softmax_entropy(logits):
     """
     Softmax Entropy
     """
-    return tf.reduce_sum(
+    return tf.compat.v1.reduce_sum(
         tf.nn.softmax(logits, axis=-1) * tf.nn.log_softmax(logits, axis=-1), axis=-1
     )
 
@@ -75,7 +77,7 @@ class Buffer:
 
 
 def REINFORCE(
-    env_name, hidden_sizes=[32], lr=5e-3, num_epochs=50, gamma=0.99, steps_per_epoch=100
+        env_name, hidden_sizes=(32,), lr=5e-3, num_epochs=50, gamma=0.99, steps_per_epoch=100
 ):
     """
     REINFORCE Algorithm
@@ -89,7 +91,7 @@ def REINFORCE(
     steps_per_epoch: number of steps per epoch
     num_epochs: number train epochs (Note: they aren't properly epochs)
     """
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
 
     env = gym.make(env_name)
 
@@ -97,9 +99,9 @@ def REINFORCE(
     act_dim = env.action_space.n
 
     # Placeholders
-    obs_ph = tf.placeholder(shape=(None, obs_dim[0]), dtype=tf.float32, name="obs")
-    act_ph = tf.placeholder(shape=(None,), dtype=tf.int32, name="act")
-    ret_ph = tf.placeholder(shape=(None,), dtype=tf.float32, name="ret")
+    obs_ph = tf.compat.v1.placeholder(shape=(None, obs_dim[0]), dtype=tf.float32, name="obs")
+    act_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.int32, name="act")
+    ret_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.float32, name="ret")
 
     ##################################################
     ########### COMPUTE THE LOSS FUNCTIONS ###########
@@ -108,7 +110,7 @@ def REINFORCE(
     # policy
     p_logits = mlp(obs_ph, hidden_sizes, act_dim, activation=tf.tanh)
 
-    act_multn = tf.squeeze(tf.random.multinomial(p_logits, 1))
+    act_multn = tf.squeeze(tf.compat.v1.random.multinomial(p_logits, 1))
     actions_mask = tf.one_hot(act_ph, depth=act_dim)
 
     p_log = tf.reduce_sum(actions_mask * tf.nn.log_softmax(p_logits), axis=1)
@@ -118,7 +120,7 @@ def REINFORCE(
     p_loss = -tf.reduce_mean(p_log * ret_ph)
 
     # policy optimization
-    p_opt = tf.train.AdamOptimizer(lr).minimize(p_loss)
+    p_opt = tf.compat.v1.train.AdamOptimizer(lr).minimize(p_loss)
 
     # Time
     now = datetime.now()
@@ -126,28 +128,28 @@ def REINFORCE(
     print("Time:", clock_time)
 
     # Set scalars and hisograms for TensorBoard
-    tf.summary.scalar("p_loss", p_loss, collections=["train"])
-    tf.summary.scalar("entropy", entropy, collections=["train"])
-    tf.summary.histogram("p_soft", tf.nn.softmax(p_logits), collections=["train"])
-    tf.summary.histogram("p_log", p_log, collections=["train"])
-    tf.summary.histogram("act_multn", act_multn, collections=["train"])
-    tf.summary.histogram("p_logits", p_logits, collections=["train"])
-    tf.summary.histogram("ret_ph", ret_ph, collections=["train"])
-    train_summary = tf.summary.merge_all("train")
+    tf.compat.v1.summary.scalar("p_loss", p_loss, collections=["train"])
+    tf.compat.v1.summary.scalar("entropy", entropy, collections=["train"])
+    tf.compat.v1.summary.histogram("p_soft", tf.compat.v1.nn.softmax(p_logits), collections=["train"])
+    tf.compat.v1.summary.histogram("p_log", p_log, collections=["train"])
+    tf.compat.v1.summary.histogram("act_multn", act_multn, collections=["train"])
+    tf.compat.v1.summary.histogram("p_logits", p_logits, collections=["train"])
+    tf.compat.v1.summary.histogram("ret_ph", ret_ph, collections=["train"])
+    train_summary = tf.compat.v1.summary.merge_all("train")
 
-    tf.summary.scalar("old_p_loss", p_loss, collections=["pre_train"])
-    pre_scalar_summary = tf.summary.merge_all("pre_train")
+    tf.compat.v1.summary.scalar("old_p_loss", p_loss, collections=["pre_train"])
+    pre_scalar_summary = tf.compat.v1.summary.merge_all("pre_train")
 
     hyp_str = "-steps_{}-aclr_{}".format(steps_per_epoch, lr)
-    file_writer = tf.summary.FileWriter(
+    file_writer = tf.compat.v1.summary.FileWriter(
         "log_dir/{}/REINFORCE_{}_{}".format(env_name, clock_time, hyp_str),
-        tf.get_default_graph(),
+        tf.compat.v1.get_default_graph(),
     )
 
     # create a session
-    sess = tf.Session()
+    sess = tf.compat.v1.Session()
     # initialize the variables
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     # few variables
     step_count = 0
@@ -220,16 +222,16 @@ def REINFORCE(
                 "Ep:%d MnRew:%.2f MxRew:%.1f EpLen:%.1f Buffer:%d -- Step:%d -- Time:%d"
                 % (
                     ep,
-                    np.mean(train_rewards),
-                    np.max(train_rewards),
-                    np.mean(train_ep_len),
+                    float(np.mean(train_rewards)),
+                    float(np.max(train_rewards)),
+                    float(np.mean(train_ep_len)),
                     len(buffer),
                     step_count,
                     time.time() - timer,
                 )
             )
 
-            summary = tf.Summary()
+            summary = tf.compat.v1.Summary()
             summary.value.add(
                 tag="supplementary/len", simple_value=np.mean(train_ep_len)
             )
@@ -248,6 +250,7 @@ def REINFORCE(
 
 
 if __name__ == "__main__":
+    disable_eager_execution()
     REINFORCE(
         "LunarLander-v2",
         hidden_sizes=[64],

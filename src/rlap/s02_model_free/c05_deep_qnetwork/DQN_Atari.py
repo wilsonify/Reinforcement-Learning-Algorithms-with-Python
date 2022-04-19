@@ -38,7 +38,7 @@ def fnn(x, hidden_layers, output_layer, activation=tf.nn.relu, last_activation=N
 
 
 def qnet(
-    x, hidden_layers, output_size, fnn_activation=tf.nn.relu, last_activation=None
+        x, hidden_layers, output_size, fnn_activation=tf.nn.relu, last_activation=None
 ):
     """
     Deep Q network: CNN followed by FNN
@@ -125,7 +125,7 @@ def eps_greedy(action_values, eps=0.1):
         return np.argmax(action_values)
 
 
-def test_agent(env_test, agent_op, num_games=20):
+def t_agent(env_test, agent_op, num_games=20):
     """
     Test an agent
     """
@@ -158,24 +158,23 @@ def scale_frames(frames):
 
 
 def DQN(
-    env_name,
-    hidden_sizes=[32],
-    lr=1e-2,
-    num_epochs=2000,
-    buffer_size=100000,
-    discount=0.99,
-    render_cycle=100,
-    update_target_net=1000,
-    batch_size=64,
-    update_freq=4,
-    frames_num=2,
-    min_buffer_size=5000,
-    test_frequency=20,
-    start_explor=1,
-    end_explor=0.1,
-    explor_steps=100000,
+        env_name,
+        hidden_sizes=[32],
+        lr=1e-2,
+        num_epochs=2000,
+        buffer_size=100000,
+        discount=0.99,
+        render_cycle=100,
+        update_target_net=1000,
+        batch_size=64,
+        update_freq=4,
+        frames_num=2,
+        min_buffer_size=5000,
+        test_frequency=20,
+        start_explor=1,
+        end_explor=0.1,
+        explor_steps=100000,
 ):
-
     # Create the environment both for train and test
     env = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
     env_test = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
@@ -317,7 +316,6 @@ def DQN(
             ################ TRAINING ###############
             # If it's time to train the network:
             if len(buffer) > min_buffer_size and (step_count % update_freq == 0):
-
                 # sample a minibatch from the buffer
                 mb_obs, mb_rew, mb_act, mb_obs2, mb_done = buffer.sample_minibatch(
                     batch_size
@@ -339,9 +337,8 @@ def DQN(
 
             # Every update_target_net steps, update the target network
             if (len(buffer) > min_buffer_size) and (
-                step_count % update_target_net == 0
+                    step_count % update_target_net == 0
             ):
-
                 # run the session to update the target network and get the mean loss sumamry
                 _, train_summary = sess.run(
                     [update_target_op, mean_loss_summary],
@@ -359,7 +356,7 @@ def DQN(
         # every test_frequency episodes, test the agent and write some stats in TensorBoard
         if ep % test_frequency == 0:
             # Test the agent to 10 games
-            test_rw = test_agent(env_test, agent_op, num_games=10)
+            test_rw = t_agent(env_test, agent_op, num_games=10)
 
             # Run the test stats and add them to the file_writer
             test_summary = sess.run(reward_summary, feed_dict={mr_v: np.mean(test_rw)})
@@ -393,7 +390,6 @@ def DQN(
 
 
 if __name__ == "__main__":
-
     DQN(
         "PongNoFrameskip-v4",
         hidden_sizes=[128],

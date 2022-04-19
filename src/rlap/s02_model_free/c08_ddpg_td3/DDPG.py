@@ -1,3 +1,7 @@
+"""
+deep deterministic policy gradient
+"""
+
 import numpy as np
 import tensorflow as tf
 import gym

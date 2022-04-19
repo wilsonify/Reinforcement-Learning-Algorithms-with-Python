@@ -1,3 +1,7 @@
+"""
+Model Ensemble Trust Region Policy Optimization
+"""
+
 import numpy as np
 import tensorflow as tf
 import gym

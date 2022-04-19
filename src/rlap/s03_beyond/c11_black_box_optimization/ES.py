@@ -1,3 +1,6 @@
+"""
+evolution strategies
+"""
 import numpy as np
 import tensorflow as tf
 from datetime import datetime

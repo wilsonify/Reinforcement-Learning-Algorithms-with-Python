@@ -1,3 +1,6 @@
+"""
+Trust Region Policy Optimization
+"""
 import numpy as np
 import tensorflow as tf
 import gym
@@ -187,7 +190,7 @@ def flatten(tensor):
 
 class StructEnv(gym.Wrapper):
     """
-    Gym Wrapper to store information like number of steps and total reward of the last espisode.
+    Gym Wrapper to store information like number of steps and total reward of the last episode.
     """
 
     def __init__(self, env):
