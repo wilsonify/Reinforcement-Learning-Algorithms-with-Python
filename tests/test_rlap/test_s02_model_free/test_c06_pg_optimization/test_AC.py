@@ -1,5 +1,7 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.framework.ops import disable_eager_execution
+
 import gym
 from datetime import datetime
 import time
@@ -12,6 +14,7 @@ def test_smoke():
 
 
 def test_AC():
+    disable_eager_execution()
     AC(
         "LunarLander-v2",
         hidden_sizes=[64],
@@ -19,6 +22,6 @@ def test_AC():
         cr_lr=1.5e-2,
         gamma=0.99,
         steps_per_epoch=100,
-        steps_to_print=5000,
-        num_epochs=8000,
+        steps_to_print=500,
+        num_epochs=100,
     )

@@ -1,3 +1,7 @@
+"""
+Actor-Critic Algorithm
+"""
+
 import numpy as np
 import tensorflow as tf
 import gym
@@ -10,8 +14,8 @@ def mlp(x, hidden_layers, output_size, activation=tf.nn.relu, last_activation=No
     Multi-layer perceptron
     """
     for l in hidden_layers:
-        x = tf.layers.dense(x, units=l, activation=activation)
-    return tf.layers.dense(x, units=output_size, activation=last_activation)
+        x = tf.compat.v1.layers.dense(x, units=l, activation=activation)
+    return tf.compat.v1.layers.dense(x, units=output_size, activation=last_activation)
 
 
 def softmax_entropy(logits):
@@ -78,14 +82,14 @@ class Buffer:
 
 
 def AC(
-    env_name,
-    hidden_sizes=[32],
-    ac_lr=5e-3,
-    cr_lr=8e-3,
-    num_epochs=50,
-    gamma=0.99,
-    steps_per_epoch=100,
-    steps_to_print=100,
+        env_name,
+        hidden_sizes=(32,),
+        ac_lr=5e-3,
+        cr_lr=8e-3,
+        num_epochs=50,
+        gamma=0.99,
+        steps_per_epoch=100,
+        steps_to_print=100,
 ):
     """
         Actor-Critic Algorithm
@@ -100,7 +104,7 @@ def AC(
         gamma: discount factor
         steps_per_epoch: number of steps per epoch
     """
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
 
     env = gym.make(env_name)
 
@@ -108,10 +112,10 @@ def AC(
     act_dim = env.action_space.n
 
     # Placeholders
-    obs_ph = tf.placeholder(shape=(None, obs_dim[0]), dtype=tf.float32, name="obs")
-    act_ph = tf.placeholder(shape=(None,), dtype=tf.int32, name="act")
-    ret_ph = tf.placeholder(shape=(None,), dtype=tf.float32, name="ret")
-    rtg_ph = tf.placeholder(shape=(None,), dtype=tf.float32, name="rtg")
+    obs_ph = tf.compat.v1.placeholder(shape=(None, obs_dim[0]), dtype=tf.float32, name="obs")
+    act_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.int32, name="act")
+    ret_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.float32, name="ret")
+    rtg_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.float32, name="rtg")
 
     #####################################################
     ########### COMPUTE THE PG LOSS FUNCTIONS ###########
@@ -120,7 +124,7 @@ def AC(
     # policy
     p_logits = mlp(obs_ph, hidden_sizes, act_dim, activation=tf.tanh)
 
-    act_multn = tf.squeeze(tf.random.multinomial(p_logits, 1))
+    act_multn = tf.squeeze(tf.compat.v1.random.multinomial(p_logits, 1))
     actions_mask = tf.one_hot(act_ph, depth=act_dim)
     p_log = tf.reduce_sum(actions_mask * tf.nn.log_softmax(p_logits), axis=1)
     # entropy useful to study the algorithms
@@ -128,7 +132,7 @@ def AC(
     p_loss = -tf.reduce_mean(p_log * ret_ph)
 
     # policy optimization
-    p_opt = tf.train.AdamOptimizer(ac_lr).minimize(p_loss)
+    p_opt = tf.compat.v1.train.AdamOptimizer(ac_lr).minimize(p_loss)
 
     #######################################
     ###########  VALUE FUNCTION ###########
@@ -139,7 +143,7 @@ def AC(
     # MSE loss function
     v_loss = tf.reduce_mean((rtg_ph - s_values) ** 2)
     # value function optimization
-    v_opt = tf.train.AdamOptimizer(cr_lr).minimize(v_loss)
+    v_opt = tf.compat.v1.train.AdamOptimizer(cr_lr).minimize(v_loss)
 
     # Time
     now = datetime.now()
@@ -147,33 +151,33 @@ def AC(
     print("Time:", clock_time)
 
     # Set scalars and hisograms for TensorBoard
-    tf.summary.scalar("p_loss", p_loss, collections=["train"])
-    tf.summary.scalar("v_loss", v_loss, collections=["train"])
-    tf.summary.scalar("entropy", entropy, collections=["train"])
-    tf.summary.scalar("s_values", tf.reduce_mean(s_values), collections=["train"])
-    tf.summary.histogram("p_soft", tf.nn.softmax(p_logits), collections=["train"])
-    tf.summary.histogram("p_log", p_log, collections=["train"])
-    tf.summary.histogram("act_multn", act_multn, collections=["train"])
-    tf.summary.histogram("p_logits", p_logits, collections=["train"])
-    tf.summary.histogram("ret_ph", ret_ph, collections=["train"])
-    tf.summary.histogram("rtg_ph", rtg_ph, collections=["train"])
-    tf.summary.histogram("s_values", s_values, collections=["train"])
-    train_summary = tf.summary.merge_all("train")
+    tf.compat.v1.summary.scalar("p_loss", p_loss, collections=["train"])
+    tf.compat.v1.summary.scalar("v_loss", v_loss, collections=["train"])
+    tf.compat.v1.summary.scalar("entropy", entropy, collections=["train"])
+    tf.compat.v1.summary.scalar("s_values", tf.reduce_mean(s_values), collections=["train"])
+    tf.compat.v1.summary.histogram("p_soft", tf.nn.softmax(p_logits), collections=["train"])
+    tf.compat.v1.summary.histogram("p_log", p_log, collections=["train"])
+    tf.compat.v1.summary.histogram("act_multn", act_multn, collections=["train"])
+    tf.compat.v1.summary.histogram("p_logits", p_logits, collections=["train"])
+    tf.compat.v1.summary.histogram("ret_ph", ret_ph, collections=["train"])
+    tf.compat.v1.summary.histogram("rtg_ph", rtg_ph, collections=["train"])
+    tf.compat.v1.summary.histogram("s_values", s_values, collections=["train"])
+    train_summary = tf.compat.v1.compat.v1.summary.merge_all("train")
 
-    tf.summary.scalar("old_v_loss", v_loss, collections=["pre_train"])
-    tf.summary.scalar("old_p_loss", p_loss, collections=["pre_train"])
-    pre_scalar_summary = tf.summary.merge_all("pre_train")
+    tf.compat.v1.summary.scalar("old_v_loss", v_loss, collections=["pre_train"])
+    tf.compat.v1.summary.scalar("old_p_loss", p_loss, collections=["pre_train"])
+    pre_scalar_summary = tf.compat.v1.summary.merge_all("pre_train")
 
     hyp_str = "-steps_{}-aclr_{}-crlr_{}".format(steps_per_epoch, ac_lr, cr_lr)
-    file_writer = tf.summary.FileWriter(
+    file_writer = tf.compat.v1.compat.v1.summary.FileWriter(
         "log_dir/{}/AC_{}_{}".format(env_name, clock_time, hyp_str),
-        tf.get_default_graph(),
+        tf.compat.v1.get_default_graph(),
     )
 
     # create a session
-    sess = tf.Session()
+    sess = tf.compat.v1.Session()
     # initialize the variables
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     # few variables
     step_count = 0
@@ -265,7 +269,7 @@ def AC(
             },
         )
         file_writer.add_summary(train_summary_run, step_count)
-        summary = tf.Summary()
+        summary = tf.compat.v1.Summary()
         summary.value.add(tag="diff/p_loss", simple_value=(old_p_loss - new_p_loss))
         summary.value.add(tag="diff/v_loss", simple_value=(old_v_loss - new_v_loss))
         file_writer.add_summary(summary, step_count)
@@ -286,7 +290,7 @@ def AC(
                 )
             )
 
-            summary = tf.Summary()
+            summary = tf.compat.v1.Summary()
             summary.value.add(
                 tag="supplementary/len", simple_value=np.mean(train_ep_len)
             )
