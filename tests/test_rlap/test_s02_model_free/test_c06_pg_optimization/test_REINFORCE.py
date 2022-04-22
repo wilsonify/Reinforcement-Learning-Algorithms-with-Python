@@ -1,5 +1,7 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.framework.ops import disable_eager_execution
+
 import gym
 from datetime import datetime
 import time
@@ -8,12 +10,13 @@ from rlap.s02_model_free.c06_pg_optimization.REINFORCE import mlp, softmax_entro
 
 
 def test_REINFORCE():
+    disable_eager_execution()
     env_name = "LunarLander-v2"
     hidden_sizes = [64]
     lr = 8e-3
     gamma = 0.99
-    num_epochs = 1000
-    steps_per_epoch = 1000
+    num_epochs = 100
+    steps_per_epoch = 100
 
     tf.compat.v1.reset_default_graph()
 

@@ -1,5 +1,7 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.python.framework.ops import disable_eager_execution
+
 import gym
 from datetime import datetime
 import time
@@ -8,13 +10,14 @@ from rlap.s02_model_free.c06_pg_optimization.REINFORCE_baseline import Buffer, m
 
 
 def test_REINFORCE_baseline():
-    env_name = "LunarLander-v2",
-    hidden_sizes = [64],
-    p_lr = 8e-3,
-    vf_lr = 7e-3,
-    gamma = 0.99,
-    steps_per_epoch = 1000,
-    num_epochs = 1000,
+    disable_eager_execution()
+    env_name = "LunarLander-v2"
+    hidden_sizes = [64]
+    p_lr = 8e-3
+    vf_lr = 7e-3
+    gamma = 0.99
+    steps_per_epoch = 100
+    num_epochs = 100
     """
     REINFORCE with baseline Algorithm
 
