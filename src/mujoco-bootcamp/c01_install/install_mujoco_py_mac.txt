@@ -1,0 +1,61 @@
+Installing Python version of MuJoCo 2.2.1 and running a
+template MuJoCo Python file on a mac
+A) Installing Python3 on Mac
+B) Installing Atom (text editor for python) on Mac and
+running Python code from Atom
+C) Installing Python version of Mujoco and running
+template MuJoCo file from Atom
+A) Installing Python3 on Mac
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A1) First check if you have python. In terminal type
+python3. If you have Python3 then you will see the version
+number and prompt like this >>> You can try some
+commands like print(3+2). You can quit python3 by typing
+quit()
+A2) Download the latest python version from here. https://
+www.python.org/downloads/ It will be a .pkg. You can
+double click and install python. Once done you can go
+back to A1 and check installation.
+B) Installing Atom (text editor for python) on Mac and
+running Python code from Atom
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+B1) Go to https://atom.io/ and download atom. This will be
+a zip file. Unzip the file to get the Atom application. Drop
+this application in the Applications folder. You can double
+click it to open it.
+
+B2) We need to install two packages to get python up and
+running.
+i) Packages > Settings view > Install packages. Search
+language-python. Then install or enable it.
+ii) Packages > Settings view > Install packages. Search
+script.Then install or enable it. If the search returns
+nothing then click this link: atom.io/packages/script then
+click install. This will redirect to atom and get the package
+installed
+In atom type print(2+3). File > Save as > test.py. To run go
+to Package > Script > Run Script. You should see the
+answer printed in the atom window.
+If python does not run above. You need to configure
+python3 (default is python). Open Atom > Preferences.
+Then “Open Config Folder” > “packages” > “script” > “lib” >
+“grammars” > “python.js”
+In the python.js change python to python3 in the
+“Selection Based” and “File Based”. Restart from
+command prompt by typing atom . and run the file.
+C) Installing Python version of Mujoco and running
+template MuJoCo file from Atom
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
+C1) To install MuJoCo. Open the terminal and type pip
+install mujoco
+
+C2) Unzip the template_mujoco_python. Open the
+template_mujoco.py in Atom. Run the file by clicking
+Package > Script > Run Script. If everything works fine
+you will see a green box dropped on a red floor.
+C3) You can edit the template_mujoco.py to do more
+complex simulations.
+
+

@@ -1,0 +1,20 @@
+Installing MuJoCo on Ubuntu on a virtual machine
+1) Download virtual machine from here: https://
+www.virtualbox.org/wiki/Downloads
+2) Download Melodic Morenia (Ubuntu with pre-installed
+ROS) from here: https://rosi-images.datasys.swri.edu/
+3) Import the the image to virtual machine. Few things you
+need to set
+⁃ Settings > System > Processor. Assign 2 or more
+cores to Virtual machine
+⁃ Settings > Display Assign 64 MB to video memory
+⁃ Settings > Shared Folder. This can be used to share a
+folder between Ubunto and your host machine (mac/
+windows). Read this https://carleton.ca/scs/techsupport/troubleshooting-guides/creating-a-sharedfolder-in-virtualbox/
+⁃ When you start the virtual machine if you get USB
+error than you would need to disable the USB by
+going to Settings > USB
+4) Now follow the Linux instructions to get MuJoCo going
+on the virtual image
+
+

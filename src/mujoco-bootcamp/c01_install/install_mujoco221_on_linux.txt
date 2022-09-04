@@ -1,0 +1,46 @@
+Installing the C version of MuJoCo 2.2.1 on Ubuntu and
+compiling/running code
+(A) Installing MuJoCo and loading a model file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A1) Navigate to https://github.com/deepmind/mujoco/
+releases
+and download the linxu installation files, mujoco-2.2.1-linuxx86_64.tar.gz
+
+Unzip this file and put it in a good location (e.g.,
+Documents)
+A2) In terminal, navigate to bin folder and then type ./
+simulate. This will open up a GUI.
+A3) To load a model, go to the model folder and drop an
+xml, say humanoid.xml onto the open window. If
+everything worked fine, you should see a humanoid in the
+window
+(B) Compiling the C programs provided by Deepmind
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+B1) Assuming you have done A1) above
+B2) In terminal type sudo apt install libglfw3-dev. (see **)
+B3) In terminal navigate to mujoco-2.2.1/sample folder.
+Then type make. If everything worked fine you should see
+a series of executables are created. (see I below)
+B5) Navigage to bin folder. (cd .. followed by cd bin). Then
+
+type ./simulate. Now you can do A3) above
+** lock error in B while installing GLFW. See https://
+itsfoss.com/could-not-get-lock-error/. Stop the updates,
+restart linux, and redo install.
+(C) Writing your own programs and running them
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C1) Download the template_mujoco221_linux.zip.
+C2) In mujoco-2.2.1 make a new folder called my_project.
+Unzip the template_mujoco221_linux.zip.
+C3) In terminal type sudo -H nautilus. Enter root
+password. Press Ctrl + L. In the bar type /usr/lib. Now
+copy-paste the two files from mujoco/lib to /usr/lib. These
+files are: libmujoco.so and libmujoco.so.2.2.1
+C4) In terminal navigate to template file. Type ./run_linux
+and you should see a window opens and a cube falls on
+the floor. You might need to create an executable chmod
++x run_linux
+C5) See the file how_to_use_template on how to use the
+template to develop your own code.
+
+

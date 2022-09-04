@@ -1,0 +1,67 @@
+Installing the C version of MuJoCo 2.2.1 on windows and
+compiling/running code
+(A) Installing MuJoCo and loading a model file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A1) Navigate to https://github.com/deepmind/mujoco/
+releases
+and download the windows installation, mujoco-2.2.1windows-x86_64.zip
+
+Unzip this file and put it in a good location (e.g.,
+Documents)
+A2) Navigate to bin folder and double click “simulate”. This
+will open up a GUI.
+A3) To load a model, go to the model folder and drop an
+xml, say humanoid.xml onto the open window. If
+everything worked fine, you should see a humanoid in the
+window
+(B) Compiling the C programs provided by Deepmind
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+B1) Assuming you have done A1) above
+B2) Download the Visual Studio Installer (select
+community version) here: https://
+visualstudio.microsoft.com/downloads/
+Once the installer has downloaded, run it. When prompted
+
+to choose programs, choose the one that says “Desktop
+development with C++” (see screenshot below). Please
+restart your computer after installation.
+
+B3) Now we will get some additional libraries to compile
+and create executables for mujoco on windows. Go to
+https://github.com/glfw/glfw/releases and download the
+latex version for Windows (usually
+glfw-3.x.x.bin.WIN64.zip). Unzip the file.
+Now we will drag and drop some files from the glfw folder
+to mujoco
+i) Copy the entire `include/GLFW` subdirectory to `mujoco/
+include/GLFW`.
+ii) Copy glfw3dll.lib from the subdirectory corresponding
+into your compiler (here the compiler is lib-vc2022) to
+`mujoco/lib/glfw3dll.lib`.
+iii) Copy glfw3.dll from the subdirectory corresponding into
+your compiler (here the compiler is lib-vc2022) to `mujoco/
+bin/glfw3.dll`.
+
+B4) We will open the x64 shell to compile and run
+MuJoCo. Go to: Start (bottom left corner) —> Visual studio
+—> x64_Native Tools Command Prompt. (see screenshot
+below)
+
+From this shell navigate to the sample folder. Then type
+make.
+B5) Navigage to bin folder. (cd .. followed by cd bin). Then
+type simulate. Now you can do A3) above
+C. Writing your own programs and running them
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C1) Download the template_mujoco221_win.zip.
+C2) In mujoco-2.2.1 make a new folder called my_project.
+Unzip the template_mujoco221_win.zip.
+C3) Copy the two dlls in the bin folder. They are mujoco.dll
+and glfw3.dll and paste them in C:\Windows\System32
+C4) In terminal navigate to template file. Type run_win and
+you should see a window opens and a cube falls on the
+floor.
+C5) See the file how_to_use_template on how to use the
+template to develop your own code.
+
+

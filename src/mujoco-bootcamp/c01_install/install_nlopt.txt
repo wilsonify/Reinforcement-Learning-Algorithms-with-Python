@@ -1,0 +1,42 @@
+Currenlty, I have instructions to run nlop on
+Linux and Mac only. For Windows, please
+install Ubuntu via virtual machine. See “Lec
+0: Installation” at tiny.cc/mujoco on how to
+do this.
+Instructions for Mac/Linux
+1) Download the latest version, https://
+nlopt.readthedocs.io/en/latest/#downloadand-installation
+2) Unzip in a suitable location. Say
+Documents.
+3) In terminal navigate to the folder and
+type
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+
+Also see: https://nlopt.readthedocs.io/en/
+latest/NLopt_Installation/
+4) Navigate to this folder or the folder with
+tutorial.c.
+gcc tutorial.c -o tutorial -w -lnlopt -lm
+./tutorial
+If nlopt was successful you will see the
+output
+found minimum at f(0.333333,0.296296) =
+0.5443310474
+You are all set
+5) The file constrained.c shows a more
+generic example. We will reuse this code
+when we develop code in MuJoCo
+gcc constrained.c -o constrained -w -lnlopt
+-lm
+./constrained
+
+If this runs fine you would see the output
+found minimum at
+f(1.77378,1.77354,1.45269,-0.110295,4.959
+45e-05) = 8.414180297
+
+

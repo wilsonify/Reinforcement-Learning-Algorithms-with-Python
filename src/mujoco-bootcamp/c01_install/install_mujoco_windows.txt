@@ -1,0 +1,30 @@
+1) Download mujoco200_win64 from https://roboti.us/
+download.html. Unzip the file and drop it in Documents
+2) Download the license file from https://roboti.us/file/
+mjkey.txt. Drop it in the bin folder inside mujoco in the
+previous step
+3) Download the Visual Studio Installer (select community
+version) here: https://visualstudio.microsoft.com/
+downloads/
+Once the installer has downloaded, run it. When prompted
+to choose programs, choose the one that says “Desktop
+development with C++” (see screenshot below). Please
+restart your computer after installation.
+
+4) We will open the x64 shell to compile and run MuJoCo.
+Go to: Start (bottom left corner) —> Visual studio —>
+x64_Native Tools Command Prompt. (see screenshot
+below)
+
+In this cmd shell, navigate to the sample folder. Then type
+C:\mujoco_path\sample>make
+In terminal, navigate to the bin folder. Then type C:
+\mujoco_path\bin>simulate ../model/arm26.xml
+If everything worked fine then you should see a GUI open
+up and an arm moving. You are all set.
+5) In mujoco we will edit xml (model files) (see folder
+model) and write C code (see folder sample). A good
+editor will help write both files. I suggest downloading and
+installing Atom, https://atom.io/
+
+

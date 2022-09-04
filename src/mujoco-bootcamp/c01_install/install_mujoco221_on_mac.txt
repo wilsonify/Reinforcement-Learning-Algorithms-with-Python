@@ -1,0 +1,48 @@
+Installing the C version of MuJoCo 2.2.1 on mac and
+compiling/running code
+(A) Installing MuJoCo and loading a model file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A1) Navigate to https://github.com/deepmind/mujoco/
+releases
+and download the mac installer, mujoco-2.2.1-macosuniversal2.dmg
+from
+A2) Mount the mujoco-2.2.1-macos-universal2.dmg
+then move the MuJoCo application (the one with M sign)
+to the Applications folder
+A3) To load a model, open MuJoCo by double clicking the
+icon from Application folder. Then go to the model folder
+and drop an xml, say humanoid.xml onto the open
+window. If everything worked fine, you should see a
+humanoid in the window
+(B) Compiling the C programs provided by Deepmind
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+B1) From the link https://github.com/deepmind/mujoco/
+releases download the Source Code. Unzip this file in a
+good location (e.g., Documents)
+B2) Go to the sample folder and rename Makefile.macos
+to Makefile.
+
+B3) In terminal navigate to mujoco-2.2.1/sample folder.
+Then type make. If everything worked fine you should see
+a series of executables are created. (see ** below)
+B4) In terminal and within the sample folder type, ./
+simulate ../model/humanoid.xml. If everything worked fine,
+you should see a humanoid in the window
+**) If B3 throws an errors it is probably because you either
+dont have glfw or have not set the path. To install glfw in
+terminal type brew install glfw. Then locate glfw. It should
+be something like /usr/local/Cellar/glfw/3.3.8. In the
+makefile change GFLWROOT?=/usr/local/Cellar/glfw/
+3.3.8. Retry make
+(C) Writing your own programs and running them
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C1) Download the template_mujoco221.zip.
+C2) In mujoco-2.2.1 make a new folder called my_project.
+Unzip the template_mujoco221.zip.
+C3) In terminal navigate to template file. Type ./run_mac
+and you should see a window opens and a cube falls on
+the floor. (Also see ** above if there are errors
+C4) See the file how_to_use_template on how to use the
+template to develop your own code.
+
+

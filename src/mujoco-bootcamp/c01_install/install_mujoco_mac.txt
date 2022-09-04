@@ -1,0 +1,30 @@
+1) Download mujoco200_macos from https://roboti.us/
+download.html. Unzip the file and drop it in Documents
+2) Download the license file from https://roboti.us/file/
+mjkey.txt. Drop it in the bin folder inside mujoco in the
+previous step
+3) Check if you have gcc/make installed. In terminal type
+make —version and gcc —version (— is two hypens). If
+you get the version number, you are all set. Else, install
+xcode. In terminal type >> xcode-select —install and click
+“install when prompted.
+4) In terminal, navigate to the sample folder. Then type
+>>make
+In terminal, navigate to the bin folder. Then type >>./
+simulate ../model/arm26.xml
+If everything worked fine then you should see a GUI open
+up and an arm moving. You are all set.
+
+5) In mujoco we will edit xml (model files) (see folder
+model) and write C code (see folder sample). A good
+editor will help write both files. I suggest downloading and
+installing Atom, https://atom.io/
+Known problems
+- Typing ./simulate ../model/arm26.xml first time might give
+an error that the files are from an unknown developer. If
+this is the case, navigate to Settings > Security & Privacy
+
+> General. You should see the file as an app that needs to
+be approved.
+
+

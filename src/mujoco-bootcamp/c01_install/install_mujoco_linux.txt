@@ -1,0 +1,26 @@
+1) Download mujoco200_linux from https://roboti.us/
+download.html. Unzip the file and drop it in Documents
+2) Download the license file from https://roboti.us/file/
+mjkey.txt. Drop it in the bin folder inside mujoco in the
+previous step
+3) Check if you have gcc/make installed. In terminal type
+make —version and gcc —version (— is two hypens). If
+you get the version number, you are all set. Else, install
+gcc/make. The instructions are here: https://linuxize.com/
+post/how-to-install-gcc-compiler-on-ubuntu-18-04/ You
+need to know the adminstrator password before you start.
+In terminal type
+>> sudo apt update
+>> sudo apt install build-essential
+4) In terminal, navigate to the sample folder. Then type
+>>make
+In terminal, navigate to the bin folder. Then type >>./
+simulate ../model/arm26.xml
+If everything worked fine then you should see a GUI open
+up and an arm moving. You are all set.
+5) In mujoco we will edit xml (model files) (see folder
+model) and write C code (see folder sample). A good
+editor will help write both files. I suggest downloading and
+installing Atom, https://atom.io/
+
+
