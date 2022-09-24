@@ -2,8 +2,11 @@ import numpy as np
 import gym
 
 # create the environment
-env = gym.make("FrozenLake-v1")
-# enwrap it to have additional information from it
+env = gym.make(
+    "FrozenLake-v1",
+    new_step_api=True  # Whether to use old or new step API (StepAPICompatibility wrapper). Will be removed at v1.0
+)
+# unwrap it to have additional information from it
 env = env.unwrapped
 
 # spaces dimension
@@ -58,7 +61,15 @@ def run_episodes(env, policy, num_games=100):
         done = False
         while not done:
             # select the action accordingly to the policy
-            next_state, reward, done, _ = env.step(policy[state])
+            # observation, reward, done, info
+            # observation  reward, terminated,  truncated: info
+
+            next_state, reward, done, truncated, info = env.step(policy[state])
+            print(f"next_state={next_state}")
+            print(f"reward={reward}")
+            print(f"done={done}")
+            print(f"truncated={truncated}")
+            print(f"info={info}")
 
             state = next_state
             tot_rew += reward
@@ -83,7 +94,7 @@ if __name__ == "__main__":
         policy_stable = policy_improvement(V, policy)
         it += 1
 
-    print("Converged after %i policy iterations" % (it))
+    print(f"Converged after {it} policy iterations")
     run_episodes(env, policy)
     print(V.reshape((4, 4)))
     print(policy.reshape((4, 4)))
