@@ -29,26 +29,31 @@ def greedy(Q, s):
     return np.argmax(Q[s])
 
 
-def run_episodes(env, Q, num_episodes=100, to_print=False):
+def run_episodes(env, Q, num_episodes=100, nsteps=100, to_print=False, render=False):
     """
     Run some episodes to test the policy
     """
+    print("run_episodes")
     tot_rew = []
     state = env.reset()
 
-    for _ in range(num_episodes):
+    for episode in range(num_episodes):
+        print(f"episode={episode}")
         done = False
         game_rew = 0
 
-        while not done:
+        for step in range(nsteps):
             # select a greedy action
-            next_state, rew, done, _ = env.step(greedy(Q, state))
+            next_state, rew, done, truncated, info = env.step(greedy(Q, state))
 
             state = next_state
             game_rew += rew
             if done:
                 state = env.reset()
                 tot_rew.append(game_rew)
+                break
+            if render:
+                env.render()
 
     if to_print:
         print(f"Mean score: {np.mean(tot_rew):.3f} of {num_episodes} games!")
@@ -56,9 +61,8 @@ def run_episodes(env, Q, num_episodes=100, to_print=False):
     return np.mean(tot_rew)
 
 
-def Q_learning(
-        env, lr=0.01, num_episodes=10000, eps=0.3, gamma=0.95, eps_decay=0.00005
-):
+def Q_learning(env, lr=0.01, num_episodes=10000, eps=0.3, gamma=0.95, eps_decay=0.00005):
+    print("Q_learning")
     nA = env.action_space.n
     nS = env.observation_space.n
 
@@ -82,9 +86,8 @@ def Q_learning(
             # select an action following the eps-greedy policy
             action = eps_greedy(Q, state, eps)
 
-            next_state, rew, done, _ = env.step(
-                action
-            )  # Take one step in the environment
+            # Take one step in the environment
+            next_state, rew, done, truncated, info = env.step(action)
 
             # Q-learning update the state-action value (get the max Q value for the next state)
             Q[state][action] = Q[state][action] + lr * (
@@ -98,7 +101,7 @@ def Q_learning(
 
         # Test the policy every 300 episodes and print the results
         if (ep % 300) == 0:
-            test_rew = run_episodes(env, Q, 1000)
+            test_rew = run_episodes(env, Q, 10)
             print("Episode:{:5d}  Eps:{:2.4f}  Rew:{:2.4f}".format(ep, eps, test_rew))
             test_rewards.append(test_rew)
 
@@ -106,13 +109,15 @@ def Q_learning(
 
 
 if __name__ == "__main__":
-    env = gym.make("Taxi-v3")
+    with gym.make("Taxi-v3", new_step_api=True) as env:
+        Q_qlearning = Q_learning(
+            env,
+            lr=0.1,
+            num_episodes=5000,
+            eps=0.4,
+            gamma=0.95,
+            eps_decay=0.001
 
-    Q_qlearning = Q_learning(
-        env,
-        lr=0.1,
-        num_episodes=5000,
-        eps=0.4,
-        gamma=0.95,
-        eps_decay=0.001
-    )
+        )
+        env.reset()
+        run_episodes(env, Q_qlearning, num_episodes=10, to_print=True, render=True)
