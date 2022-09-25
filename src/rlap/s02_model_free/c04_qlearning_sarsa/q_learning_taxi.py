@@ -116,7 +116,7 @@ def Q_learning(env, lr=0.01, num_episodes=10000, eps=0.3, gamma=0.95, eps_decay=
     return Q
 
 
-if __name__ == "__main__":
+def main():
     with gym.make("Taxi-v3", new_step_api=True) as env:
         Q_qlearning = Q_learning(
             env,
@@ -134,3 +134,7 @@ if __name__ == "__main__":
             to_print=True,
             render=True
         )
+
+
+if __name__ == "__main__":
+    main()
