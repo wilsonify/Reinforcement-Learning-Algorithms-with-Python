@@ -2,6 +2,8 @@
 The idea of Q-learning is to approximate the Q-function by using the current optimal action value.
 The Q-learning update is very similar to the update done in SARSA,
 with the exception that it takes the maximum state-action value
+
+Q is an nS by nA matrix where each row represent a state and each column represent a different action
 """
 
 import numpy as np
@@ -61,13 +63,19 @@ def run_episodes(env, Q, num_episodes=100, nsteps=100, to_print=False, render=Fa
     return np.mean(tot_rew)
 
 
+def update_qlearning(Q, state, action, lr, reward, gamma, next_state):
+    # Q-learning update the state-action value (get the max Q value for the next state)
+    Q[state][action] = Q[state][action] + lr * (reward + gamma * np.max(Q[next_state]) - Q[state][action])
+    return Q
+
+
 def Q_learning(env, lr=0.01, num_episodes=10000, eps=0.3, gamma=0.95, eps_decay=0.00005):
     print("Q_learning")
     nA = env.action_space.n
     nS = env.observation_space.n
 
     # Initialize the Q matrix
-    # Q: matrix nS*nA where each row represent a state and each columns represent a different action
+    # Q: matrix nS*nA where each row represent a state and each column represent a different action
     Q = np.zeros((nS, nA))
     games_reward = []
     test_rewards = []
@@ -117,7 +125,12 @@ if __name__ == "__main__":
             eps=0.4,
             gamma=0.95,
             eps_decay=0.001
-
         )
         env.reset()
-        run_episodes(env, Q_qlearning, num_episodes=10, to_print=True, render=True)
+        run_episodes(
+            env=env,
+            Q=Q_qlearning,
+            num_episodes=10,
+            to_print=True,
+            render=True
+        )
