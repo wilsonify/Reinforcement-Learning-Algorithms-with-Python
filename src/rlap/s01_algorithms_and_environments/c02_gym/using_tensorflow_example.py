@@ -212,20 +212,25 @@ def tf_example08():
         # optimizer
         opt = tf.compat.v1.train.AdamOptimizer(0.4).minimize(loss)
 
-        tf.summary.scalar("MSEloss", loss)
-        tf.summary.histogram("model_weight", v_weight)
-        tf.summary.histogram("model_bias", v_bias)
+        # summary for tensorboard
+        tf.compat.v1.summary.scalar(name="MSEloss", tensor=loss)
+        tf.compat.v1.summary.histogram("weight_of_line", v_weight)
+        tf.compat.v1.summary.histogram("bias_of_line", v_bias)
+        all_summary = tf.compat.v1.summary.merge_all()
 
         now = datetime.now()
         clock_time = f"{now.day}_{now.hour}.{now.minute}.{now.second}"
-        with tf.compat.v1.summary.FileWriter("log_dir/" + clock_time, tf.compat.v1.get_default_graph()) as file_writer:
+        with tf.compat.v1.summary.FileWriter("log_dir/" + clock_time, session.graph) as file_writer:
             session.run(tf.compat.v1.global_variables_initializer())
             # loop to train the parameters
             for ep in range(210):
                 # run the optimizer and get the loss
-                train_loss, train_opt = session.run([loss, opt], feed_dict={x_ph: X, y_ph: y})
-                # print epoch number and loss
+                train_loss, train_opt, summaries = session.run([loss, opt, all_summary], feed_dict={x_ph: X, y_ph: y})
+
+                file_writer.add_summary(summaries, ep)
+
                 if ep % 40 == 0:
+                    # print epoch number and loss
                     msg = f"Epoch: {ep}, MSE: {train_loss}, W: {session.run(v_weight)}, b: {session.run(v_bias)}"
                     print(msg)
             print(f"Final weight: {session.run(v_weight)}, bias: {session.run(v_bias)}")
