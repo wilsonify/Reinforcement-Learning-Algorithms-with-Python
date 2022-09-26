@@ -27,7 +27,7 @@ class NoopResetEnv(gym.Wrapper):
         if self.override_num_noops is not None:
             noops = self.override_num_noops
         else:
-            noops = self.unwrapped.np_random.randint(
+            noops = self.unwrapped.np_random.integers(
                 1, self.noop_max + 1
             )  # pylint: disable=E1101
         assert noops > 0
@@ -188,8 +188,8 @@ class ScaledFloatFrame(gym.ObservationWrapper):
         return np.array(observation).astype(np.float32) / 255.0
 
 
-def make_env(env_name, fire=True, frames_num=2, noop_num=30, skip_frames=True):
-    env = gym.make(env_name)
+def make_env(env_name, fire=True, frames_num=2, noop_num=30, skip_frames=True, render_mode='human'):
+    env = gym.make(env_name, render_mode=render_mode)
 
     if skip_frames:
         env = MaxAndSkipEnv(env)  ## Return only every `skip`-th frame

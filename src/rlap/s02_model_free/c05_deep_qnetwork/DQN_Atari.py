@@ -176,17 +176,19 @@ def DQN(
         explor_steps=100000,
 ):
     # Create the environment both for train and test
-    env = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
-    env_test = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
+    env = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20, render_mode='human')
+    env_test = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20, render_mode='human')
     # Add a monitor to the test env to store the videos
-    env_test = gym.wrappers.Monitor(
+    """
+    env_test = gym.wrappers.Monitor( 
         env_test,
         "VIDEOS/TEST_VIDEOS" + env_name + str(current_milli_time()),
         force=True,
         video_callable=lambda x: x % 20 == 0,
     )
+    """
 
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
 
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.n
@@ -389,7 +391,8 @@ def DQN(
     env.close()
 
 
-if __name__ == "__main__":
+def main():
+    tf.compat.v1.disable_eager_execution()
     DQN(
         "PongNoFrameskip-v4",
         hidden_sizes=[128],
@@ -402,3 +405,7 @@ if __name__ == "__main__":
         min_buffer_size=10000,
         render_cycle=10000,
     )
+
+
+if __name__ == "__main__":
+    main()
