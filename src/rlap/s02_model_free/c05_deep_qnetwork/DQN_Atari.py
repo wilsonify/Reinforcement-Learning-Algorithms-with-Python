@@ -17,13 +17,13 @@ def cnn(x):
     """
     Convolutional neural network
     """
-    x = tf.layers.conv2d(
+    x = tf.compat.v1.layers.conv2d(
         x, filters=16, kernel_size=8, strides=4, padding="valid", activation="relu"
     )
-    x = tf.layers.conv2d(
+    x = tf.compat.v1.layers.conv2d(
         x, filters=32, kernel_size=4, strides=2, padding="valid", activation="relu"
     )
-    return tf.layers.conv2d(
+    return tf.compat.v1.layers.conv2d(
         x, filters=32, kernel_size=3, strides=1, padding="valid", activation="relu"
     )
 
@@ -33,8 +33,8 @@ def fnn(x, hidden_layers, output_layer, activation=tf.nn.relu, last_activation=N
     Feed-forward neural network
     """
     for l in hidden_layers:
-        x = tf.layers.dense(x, units=l, activation=activation)
-    return tf.layers.dense(x, units=output_layer, activation=last_activation)
+        x = tf.compat.v1.layers.dense(x, units=l, activation=activation)
+    return tf.compat.v1.layers.dense(x, units=output_layer, activation=last_activation)
 
 
 def qnet(
@@ -44,7 +44,7 @@ def qnet(
     Deep Q network: CNN followed by FNN
     """
     x = cnn(x)
-    x = tf.layers.flatten(x)
+    x = tf.compat.v1.layers.flatten(x)
 
     return fnn(x, hidden_layers, output_size, fnn_activation, last_activation)
 
@@ -194,21 +194,21 @@ def DQN(
     act_dim = env.action_space.n
 
     # Create all the placeholders
-    obs_ph = tf.placeholder(
+    obs_ph = tf.compat.v1.placeholder(
         shape=(None, obs_dim[0], obs_dim[1], obs_dim[2]), dtype=tf.float32, name="obs"
     )
-    act_ph = tf.placeholder(shape=(None,), dtype=tf.int32, name="act")
-    y_ph = tf.placeholder(shape=(None,), dtype=tf.float32, name="y")
+    act_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.int32, name="act")
+    y_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.float32, name="y")
 
     # Create the target network
-    with tf.variable_scope("target_network"):
+    with tf.compat.v1.variable_scope("target_network"):
         target_qv = qnet(obs_ph, hidden_sizes, act_dim)
-    target_vars = tf.trainable_variables()
+    target_vars = tf.compat.v1.trainable_variables()
 
     # Create the online network (i.e. the behavior policy)
-    with tf.variable_scope("online_network"):
+    with tf.compat.v1.variable_scope("online_network"):
         online_qv = qnet(obs_ph, hidden_sizes, act_dim)
-    train_vars = tf.trainable_variables()
+    train_vars = tf.compat.v1.trainable_variables()
 
     # Update the target network by assigning to it the variables of the online network
     # Note that the target network and the online network have the same exact architecture
@@ -221,12 +221,12 @@ def DQN(
     # One hot encoding of the action
     act_onehot = tf.one_hot(act_ph, depth=act_dim)
     # We are interested only in the Q-values of those actions
-    q_values = tf.reduce_sum(act_onehot * online_qv, axis=1)
+    q_values = tf.reduce_sum(input_tensor=act_onehot * online_qv, axis=1)
 
     # MSE loss function
-    v_loss = tf.reduce_mean((y_ph - q_values) ** 2)
+    v_loss = tf.reduce_mean(input_tensor=(y_ph - q_values) ** 2)
     # Adam optimize that minimize the loss v_loss
-    v_opt = tf.train.AdamOptimizer(lr).minimize(v_loss)
+    v_opt = tf.compat.v1.train.AdamOptimizer(lr).minimize(v_loss)
 
     def agent_op(o):
         """
@@ -245,13 +245,13 @@ def DQN(
     ml_v = tf.Variable(0.0)
 
     # TensorBoard summaries
-    tf.summary.scalar("v_loss", v_loss)
-    tf.summary.scalar("Q-value", tf.reduce_mean(q_values))
-    tf.summary.histogram("Q-values", q_values)
+    tf.compat.v1.summary.scalar("v_loss", v_loss)
+    tf.compat.v1.summary.scalar("Q-value", tf.reduce_mean(input_tensor=q_values))
+    tf.compat.v1.summary.histogram("Q-values", q_values)
 
-    scalar_summary = tf.summary.merge_all()
-    reward_summary = tf.summary.scalar("test_rew", mr_v)
-    mean_loss_summary = tf.summary.scalar("mean_loss", ml_v)
+    scalar_summary = tf.compat.v1.summary.merge_all()
+    reward_summary = tf.compat.v1.summary.scalar("test_rew", mr_v)
+    mean_loss_summary = tf.compat.v1.summary.scalar("mean_loss", ml_v)
 
     LOG_DIR = "log_dir/" + env_name
     hyp_str = "-lr_{}-upTN_{}-upF_{}-frms_{}".format(
@@ -259,14 +259,14 @@ def DQN(
     )
 
     # initialize the File Writer for writing TensorBoard summaries
-    file_writer = tf.summary.FileWriter(
-        LOG_DIR + "/DQN_" + clock_time + "_" + hyp_str, tf.get_default_graph()
+    file_writer = tf.compat.v1.summary.FileWriter(
+        LOG_DIR + "/DQN_" + clock_time + "_" + hyp_str, tf.compat.v1.get_default_graph()
     )
 
     # open a session
-    sess = tf.Session()
+    sess = tf.compat.v1.Session()
     # and initialize all the variables
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     render_the_game = False
     step_count = 0
