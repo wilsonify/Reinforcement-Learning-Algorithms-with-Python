@@ -4,12 +4,8 @@ import gym
 from datetime import datetime
 from collections import deque
 import time
-import sys
 
 from atari_wrappers import make_env
-
-
-gym.logger.set_level(40)
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -18,13 +14,13 @@ def cnn(x):
     """
     Convolutional neural network
     """
-    x = tf.layers.conv2d(
+    x = tf.compat.v1.layers.conv2d(
         x, filters=16, kernel_size=8, strides=4, padding="valid", activation="relu"
     )
-    x = tf.layers.conv2d(
+    x = tf.compat.v1.layers.conv2d(
         x, filters=32, kernel_size=4, strides=2, padding="valid", activation="relu"
     )
-    return tf.layers.conv2d(
+    return tf.compat.v1.layers.conv2d(
         x, filters=32, kernel_size=3, strides=1, padding="valid", activation="relu"
     )
 
@@ -34,18 +30,18 @@ def fnn(x, hidden_layers, output_layer, activation=tf.nn.relu, last_activation=N
     Feed-forward neural network
     """
     for l in hidden_layers:
-        x = tf.layers.dense(x, units=l, activation=activation)
-    return tf.layers.dense(x, units=output_layer, activation=last_activation)
+        x = tf.compat.v1.layers.dense(x, units=l, activation=activation)
+    return tf.compat.v1.layers.dense(x, units=output_layer, activation=last_activation)
 
 
 def qnet(
-    x, hidden_layers, output_size, fnn_activation=tf.nn.relu, last_activation=None
+        x, hidden_layers, output_size, fnn_activation=tf.nn.relu, last_activation=None
 ):
     """
     Deep Q network: CNN followed by FNN
     """
     x = cnn(x)
-    x = tf.layers.flatten(x)
+    x = tf.compat.v1.layers.flatten(x)
 
     return fnn(x, hidden_layers, output_size, fnn_activation, last_activation)
 
@@ -90,7 +86,7 @@ def q_target_values(mini_batch_rw, mini_batch_done, av, discounted_value):
     return ys
 
 
-def test_agent(env_test, agent_op, num_games=20):
+def agent_execute(env_test, agent_op, num_games=20):
     """
     Test an agent
     """
@@ -123,22 +119,22 @@ def scale_frames(frames):
 
 
 def dueling_qnet(
-    x, hidden_layers, output_size, fnn_activation=tf.nn.relu, last_activation=None
+        x, hidden_layers, output_size, fnn_activation=tf.nn.relu, last_activation=None
 ):
     """
     Dueling neural network
     """
     x = cnn(x)
-    x = tf.layers.flatten(x)
+    x = tf.compat.v1.layers.flatten(x)
 
     qf = fnn(x, hidden_layers, 1, fnn_activation, last_activation)
     aaqf = fnn(x, hidden_layers, output_size, fnn_activation, last_activation)
 
-    return qf + aaqf - tf.reduce_mean(aaqf)
+    return qf + aaqf - tf.reduce_mean(input_tensor=aaqf)
 
 
 def double_q_target_values(
-    mini_batch_rw, mini_batch_done, target_qv, online_qv, discounted_value
+        mini_batch_rw, mini_batch_done, target_qv, online_qv, discounted_value
 ):  ## IS THE NAME CORRECT???
     """
     Calculate the target value y following the double Q-learning update
@@ -150,13 +146,13 @@ def double_q_target_values(
 
     ys = []
     assert (
-        len(mini_batch_rw)
-        == len(mini_batch_done)
-        == len(target_qv)
-        == len(argmax_online_qv)
+            len(mini_batch_rw)
+            == len(mini_batch_done)
+            == len(target_qv)
+            == len(argmax_online_qv)
     )
     for r, d, t_av, arg_a in zip(
-        mini_batch_rw, mini_batch_done, target_qv, argmax_online_qv
+            mini_batch_rw, mini_batch_done, target_qv, argmax_online_qv
     ):
         if d:
             ys.append(r)
@@ -209,7 +205,7 @@ class MultiStepExperienceBuffer:
                 self.n_done_buf[ln - (len_rews - i - 1) - 1] = done
                 rgt = np.sum(
                     [
-                        (self.gamma**k) * r
+                        (self.gamma ** k) * r
                         for k, r in enumerate(np.array(self.last_rews)[i:len_rews])
                     ]
                 )
@@ -225,7 +221,7 @@ class MultiStepExperienceBuffer:
                 self.n_done_buf[ln - self.n_step - 1] = done
                 rgt = np.sum(
                     [
-                        (self.gamma**k) * r
+                        (self.gamma ** k) * r
                         for k, r in enumerate(np.array(self.last_rews)[:len_rews])
                     ]
                 )
@@ -249,63 +245,57 @@ class MultiStepExperienceBuffer:
 
 
 def DQN_with_variations(
-    env_name,
-    extensions_hyp,
-    hidden_sizes=[32],
-    lr=1e-2,
-    num_epochs=2000,
-    buffer_size=100000,
-    discount=0.99,
-    render_cycle=100,
-    update_target_net=1000,
-    batch_size=64,
-    update_freq=4,
-    frames_num=2,
-    min_buffer_size=5000,
-    test_frequency=20,
-    start_explor=1,
-    end_explor=0.1,
-    explor_steps=100000,
+        env_name,
+        extensions_hyp,
+        hidden_sizes=(32,),
+        lr=1e-2,
+        num_epochs=2000,
+        buffer_size=100000,
+        discount=0.99,
+        render_cycle=100,
+        update_target_net=1000,
+        batch_size=64,
+        update_freq=4,
+        frames_num=2,
+        min_buffer_size=5000,
+        test_frequency=20,
+        start_explor=1,
+        end_explor=0.1,
+        explor_steps=100000,
 ):
-
     # Create the environment both for train and test
     env = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
     env_test = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
     # Add a monitor to the test env to store the videos
-    env_test = gym.wrappers.Monitor(
-        env_test,
-        "VIDEOS/TEST_VIDEOS" + env_name + str(current_milli_time()),
-        force=True,
-        video_callable=lambda x: x % 20 == 0,
-    )
+    # env_test = gym.wrappers.Monitor(        env_test,        "VIDEOS/TEST_VIDEOS" + env_name + str(current_milli_time()),        force=True,        video_callable=lambda x: x % 20 == 0,    )
 
-    tf.reset_default_graph()
+    tf.compat.v1.reset_default_graph()
 
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.n
 
     # Create all the placeholders
-    obs_ph = tf.placeholder(
+    obs_ph = tf.compat.v1.placeholder(
         shape=(None, obs_dim[0], obs_dim[1], obs_dim[2]), dtype=tf.float32, name="obs"
     )
-    act_ph = tf.placeholder(shape=(None,), dtype=tf.int32, name="act")
-    y_ph = tf.placeholder(shape=(None,), dtype=tf.float32, name="y")
+    act_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.int32, name="act")
+    y_ph = tf.compat.v1.placeholder(shape=(None,), dtype=tf.float32, name="y")
 
     # Create the target network
-    with tf.variable_scope("target_network"):
+    with tf.compat.v1.variable_scope("target_network"):
         if extensions_hyp["dueling"]:
             target_qv = dueling_qnet(obs_ph, hidden_sizes, act_dim)
         else:
             target_qv = qnet(obs_ph, hidden_sizes, act_dim)
-    target_vars = tf.trainable_variables()
+    target_vars = tf.compat.v1.trainable_variables()
 
     # Create the online network (i.e. the behavior policy)
-    with tf.variable_scope("online_network"):
+    with tf.compat.v1.variable_scope("online_network"):
         if extensions_hyp["dueling"]:
             online_qv = dueling_qnet(obs_ph, hidden_sizes, act_dim)
         else:
             online_qv = qnet(obs_ph, hidden_sizes, act_dim)
-    train_vars = tf.trainable_variables()
+    train_vars = tf.compat.v1.trainable_variables()
 
     # Update the target network by assigning to it the variables of the online network
     # Note that the target network and the online network have the same exact architecture
@@ -318,12 +308,12 @@ def DQN_with_variations(
     # One hot encoding of the action
     act_onehot = tf.one_hot(act_ph, depth=act_dim)
     # We are interested only in the Q-values of those actions
-    q_values = tf.reduce_sum(act_onehot * online_qv, axis=1)
+    q_values = tf.reduce_sum(input_tensor=act_onehot * online_qv, axis=1)
 
     # MSE loss function
-    v_loss = tf.reduce_mean((y_ph - q_values) ** 2)
+    v_loss = tf.reduce_mean(input_tensor=(y_ph - q_values) ** 2)
     # Adam optimize that minimize the loss v_loss
-    v_opt = tf.train.AdamOptimizer(lr).minimize(v_loss)
+    v_opt = tf.compat.v1.train.AdamOptimizer(lr).minimize(v_loss)
 
     def agent_op(o):
         """
@@ -342,13 +332,13 @@ def DQN_with_variations(
     ml_v = tf.Variable(0.0)
 
     # TensorBoard summaries
-    tf.summary.scalar("v_loss", v_loss)
-    tf.summary.scalar("Q-value", tf.reduce_mean(q_values))
-    tf.summary.histogram("Q-values", q_values)
+    tf.compat.v1.summary.scalar("v_loss", v_loss)
+    tf.compat.v1.summary.scalar("Q-value", tf.reduce_mean(input_tensor=q_values))
+    tf.compat.v1.summary.histogram("Q-values", q_values)
 
-    scalar_summary = tf.summary.merge_all()
-    reward_summary = tf.summary.scalar("test_rew", mr_v)
-    mean_loss_summary = tf.summary.scalar("mean_loss", ml_v)
+    scalar_summary = tf.compat.v1.summary.merge_all()
+    reward_summary = tf.compat.v1.summary.scalar("test_rew", mr_v)
+    mean_loss_summary = tf.compat.v1.summary.scalar("mean_loss", ml_v)
 
     LOG_DIR = "log_dir/" + env_name
     hyp_str = "-lr_{}-upTN_{}-upF_{}-frms_{}-ddqn_{}-duel_{}-nstep_{}".format(
@@ -362,14 +352,14 @@ def DQN_with_variations(
     )
 
     # initialize the File Writer for writing TensorBoard summaries
-    file_writer = tf.summary.FileWriter(
-        LOG_DIR + "/DQN_" + clock_time + "_" + hyp_str, tf.get_default_graph()
+    file_writer = tf.compat.v1.summary.FileWriter(
+        LOG_DIR + "/DQN_" + clock_time + "_" + hyp_str, tf.compat.v1.get_default_graph()
     )
 
     # open a session
-    sess = tf.Session()
+    sess = tf.compat.v1.Session()
     # and initialize all the variables
-    sess.run(tf.global_variables_initializer())
+    sess.run(tf.compat.v1.global_variables_initializer())
 
     render_the_game = False
     step_count = 0
@@ -453,9 +443,8 @@ def DQN_with_variations(
 
             # Every update_target_net steps, update the target network
             if (len(buffer) > min_buffer_size) and (
-                step_count % update_target_net == 0
+                    step_count % update_target_net == 0
             ):
-
                 # run the session to update the target network and get the mean loss sumamry
                 _, train_summary = sess.run(
                     [update_target_op, mean_loss_summary],
@@ -473,7 +462,7 @@ def DQN_with_variations(
         # every test_frequency episodes, test the agent and write some stats in TensorBoard
         if ep % test_frequency == 0:
             # Test the agent to 10 games
-            test_rw = test_agent(env_test, agent_op, num_games=10)
+            test_rw = agent_execute(env_test, agent_op, num_games=10)
 
             # Run the test stats and add them to the file_writer
             test_summary = sess.run(reward_summary, feed_dict={mr_v: np.mean(test_rw)})
@@ -481,19 +470,14 @@ def DQN_with_variations(
 
             # Print some useful stats
             ep_sec_time = int((current_milli_time() - ep_time) / 1000)
-            print(
-                "Ep:%4d Rew:%4.2f, Eps:%2.2f -- Step:%5d -- Test:%4.2f %4.2f -- Time:%d -- Ep_Steps:%d"
-                % (
-                    ep,
-                    np.mean(batch_rew),
-                    eps,
-                    step_count,
-                    np.mean(test_rw),
-                    np.std(test_rw),
-                    ep_sec_time,
-                    (step_count - old_step_count) / test_frequency,
-                )
-            )
+            msg = f"""
+            Ep:{ep} Rew:{np.mean(batch_rew)}, 
+            Eps:{eps} -- Step:{step_count} -- 
+            Test:{np.mean(test_rw)} {np.std(test_rw)} -- 
+            Time:{ep_sec_time} -- 
+            Ep_Steps:{(step_count - old_step_count) / test_frequency}
+            """
+            print(msg)
 
             ep_time = current_milli_time()
             batch_rew = []
@@ -507,11 +491,12 @@ def DQN_with_variations(
 
 
 if __name__ == "__main__":
+    tf.compat.v1.disable_eager_execution()
+    gym.logger.set_level(40)
 
-    extensions_hyp = {"DDQN": False, "dueling": False, "multi_step": 1}
     DQN_with_variations(
-        "PongNoFrameskip-v4",
-        extensions_hyp,
+        env_name="PongNoFrameskip-v4",
+        extensions_hyp={"DDQN": False, "dueling": False, "multi_step": 1},
         hidden_sizes=[128],
         lr=2e-4,
         buffer_size=100000,
