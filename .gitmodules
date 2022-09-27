@@ -19,3 +19,15 @@
 [submodule "external/baselines"]
 	path = external/baselines
 	url = https://github.com/openai/baselines.git
+[submodule "external/mujoco"]
+	path = external/mujoco
+	url = https://github.com/deepmind/mujoco.git
+[submodule "external/tianshou"]
+	path = external/tianshou
+	url = https://github.com/thu-ml/tianshou.git
+[submodule "external/rl-baselines3-zoo"]
+	path = external/rl-baselines3-zoo
+	url = https://github.com/DLR-RM/rl-baselines3-zoo.git
+[submodule "external/pytorch"]
+	path = external/pytorch
+	url = https://github.com/pytorch/pytorch.git
