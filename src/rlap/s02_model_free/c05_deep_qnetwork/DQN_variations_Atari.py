@@ -5,6 +5,9 @@ from datetime import datetime
 from collections import deque
 import time
 
+from gym.wrappers.monitoring import video_recorder
+from gym.wrappers.monitoring.video_recorder import ImageEncoder
+
 from atari_wrappers import make_env
 
 current_milli_time = lambda: int(round(time.time() * 1000))
@@ -266,8 +269,25 @@ def DQN_with_variations(
     # Create the environment both for train and test
     env = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
     env_test = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
+
     # Add a monitor to the test env to store the videos
-    # env_test = gym.wrappers.Monitor(        env_test,        "VIDEOS/TEST_VIDEOS" + env_name + str(current_milli_time()),        force=True,        video_callable=lambda x: x % 20 == 0,    )
+    """
+    vid_path = f"VIDEOS/TEST_VIDEOS_{env_name}_{current_milli_time()}"
+    vid = video_recorder.VideoRecorder(
+        env=env_test,
+        path=vid_path,
+        # metadata: Optional[dict] = None,
+        # enabled: bool = True,
+        # base_path: Optional[str] = None,
+        # internal_backend_use: bool = False,
+    )
+    vid.encoder = ImageEncoder(
+        output_path=vid_path,
+        frame_shape=(300, 500, 3),
+        frames_per_sec=10,
+        output_frames_per_sec=10,
+    )
+    """
 
     tf.compat.v1.reset_default_graph()
 
@@ -403,6 +423,7 @@ def DQN_with_variations(
             # Render the game if you want to
             if render_the_game:
                 env.render()
+                vid.capture_frame()
 
             # Add the transition to the replay buffer
             buffer.add(obs, rew, act, obs2, done)
