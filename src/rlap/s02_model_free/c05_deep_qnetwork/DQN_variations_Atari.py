@@ -267,8 +267,8 @@ def DQN_with_variations(
         explor_steps=100000,
 ):
     # Create the environment both for train and test
-    env = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
-    env_test = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20)
+    env = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20, render_mode="rgb_array")
+    env_test = make_env(env_name, frames_num=frames_num, skip_frames=True, noop_num=20, render_mode="human")
 
     # Add a monitor to the test env to store the videos
     """
@@ -381,7 +381,6 @@ def DQN_with_variations(
     # and initialize all the variables
     sess.run(tf.compat.v1.global_variables_initializer())
 
-    render_the_game = False
     step_count = 0
     last_update_loss = []
     ep_time = current_milli_time()
@@ -421,9 +420,9 @@ def DQN_with_variations(
             obs2, rew, done, _ = env.step(act)
 
             # Render the game if you want to
-            if render_the_game:
-                env.render()
-                vid.capture_frame()
+            if ep % render_cycle == 0:
+                env.render(mode='rgb_array')
+                # vid.capture_frame()
 
             # Add the transition to the replay buffer
             buffer.add(obs, rew, act, obs2, done)
@@ -478,7 +477,7 @@ def DQN_with_variations(
             if done:
                 obs = env.reset()
                 batch_rew.append(g_rew)
-                g_rew, render_the_game = 0, False
+                g_rew = 0
 
         # every test_frequency episodes, test the agent and write some stats in TensorBoard
         if ep % test_frequency == 0:
@@ -503,9 +502,6 @@ def DQN_with_variations(
             ep_time = current_milli_time()
             batch_rew = []
             old_step_count = step_count
-
-        if ep % render_cycle == 0:
-            render_the_game = True
 
     file_writer.close()
     env.close()
