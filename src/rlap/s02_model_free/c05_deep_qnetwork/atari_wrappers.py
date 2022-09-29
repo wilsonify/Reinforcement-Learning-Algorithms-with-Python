@@ -105,7 +105,7 @@ class MaxAndSkipEnv(gym.Wrapper):
         total_reward = 0.0
         done = None
         for i in range(self._skip):
-            obs, reward, done, info = self.env.step(action)
+            obs, reward, done, trunc, info = self.env.step(action)
             if i == self._skip - 2:
                 self._obs_buffer[0] = obs
             if i == self._skip - 1:
@@ -189,7 +189,7 @@ class ScaledFloatFrame(gym.ObservationWrapper):
 
 
 def make_env(env_name, fire=True, frames_num=2, noop_num=30, skip_frames=True, render_mode='human'):
-    env = gym.make(env_name, render_mode=render_mode)
+    env = gym.make(env_name, render_mode=render_mode, new_step_api=True)
 
     if skip_frames:
         env = MaxAndSkipEnv(env)  ## Return only every `skip`-th frame
