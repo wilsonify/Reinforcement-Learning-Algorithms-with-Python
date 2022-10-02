@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import tensorflow as tf
 import gym
@@ -509,7 +511,7 @@ def DQN_with_variations(
 
 if __name__ == "__main__":
     tf.compat.v1.disable_eager_execution()
-    gym.logger.set_level(40)
+    gym.logger.set_level(logging.INFO)
 
     DQN_with_variations(
         env_name="PongNoFrameskip-v4",
