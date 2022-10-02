@@ -1,3 +1,25 @@
+"""
+REINFORCE with baseline
+REINFORCE has the nice property of being unbiased,
+due to the MC return,
+which provides the true return of a full trajectory.
+However, the unbiased estimate is to the detriment of the variance,
+which increases with the length of the trajectory.
+Why?
+This effect is due to the stochasticity of the policy.
+By executing a full trajectory, you would know its true reward.
+However, the value that is assigned to each state-action pair may not be correct,
+since the policy is stochastic, and executing it another time may lead to a new state,
+and consequently, a different reward.
+Moreover, you can see that the higher the number of actions in a trajectory,
+the more stochasticity you will have introduced into the system,
+therefore, ending up with higher variance.
+Luckily, it is possible to introduce a baseline, in the estimation of the return,
+therefore decreasing the variance, and improving the stability and performance of the algorithm.
+The algorithms that adopt this strategy is called REINFORCE with baseline,
+and the gradient of its objective function is as follows:
+"""
+
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework.ops import disable_eager_execution
@@ -104,7 +126,7 @@ def REINFORCE_baseline(
     """
     tf.compat.v1.reset_default_graph()
 
-    env = gym.make(env_name)
+    env = gym.make(env_name, new_step_api=True)
 
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.n
@@ -202,7 +224,7 @@ def REINFORCE_baseline(
             # run the policy
             act, val = sess.run([act_multn, s_values], feed_dict={obs_ph: [obs]})
             # take a step in the environment
-            obs2, rew, done, _ = env.step(np.squeeze(act))
+            obs2, rew, done, trunc, _ = env.step(np.squeeze(act))
 
             # add the new transition
             env_buf.append([obs.copy(), rew, act, np.squeeze(val)])
@@ -295,7 +317,7 @@ def REINFORCE_baseline(
 
 
 if __name__ == "__main__":
-    disable_eager_execution()
+    tf.compat.v1.disable_eager_execution()
     REINFORCE_baseline(
         "LunarLander-v2",
         hidden_sizes=[64],

@@ -1,3 +1,15 @@
+"""
+REINFORCE Algorithms
+Williams studied the problem of choosing actions to maximize immedate reward.
+He identified a broad class of update rules that perform gradient descent on the
+expected reward and showed how to integrate these rules with backpropagation.
+This class, called REINFORCE algorithms,
+includes linear reward-inaction as a special case.
+the expected update is exactly in the direction of the expected reward gradient.
+Otherwise, the update is in the same half space as the gradient but not necessarily in the steepest increase.
+Williams points out that the choice of baseline can have a profound effect on the convergence speed of the algorithm.
+"""
+
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.framework.ops import disable_eager_execution
