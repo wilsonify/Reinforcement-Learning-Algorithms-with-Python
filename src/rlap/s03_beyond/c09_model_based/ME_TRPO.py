@@ -354,7 +354,7 @@ class StructEnv(gym.Wrapper):
         return self.n_obs.copy()
 
     def step(self, action):
-        ob, reward, done, info = self.env.step(action)
+        ob, reward, done, trunc, info = self.env.step(action)
         self.total_rew += reward
         self.len_episode += 1
         return ob, reward, done, info
@@ -441,8 +441,8 @@ def METRPO(
     tf.reset_default_graph()
 
     # Create a few environments to collect the trajectories
-    envs = [StructEnv(gym.make(env_name)) for _ in range(number_envs)]
-    env_test = gym.make(env_name)
+    envs = [StructEnv(gym.make(env_name)) for _ in range(number_envs, new_step_api=True)]
+    env_test = gym.make(env_name, new_step_api=True)
     # env_test = gym.wrappers.Monitor(env_test, "VIDEOS/", force=True, video_callable=lambda x: x%10 == 0)
 
     low_action_space = envs[0].action_space.low
@@ -891,7 +891,7 @@ def METRPO(
 
     # Create a simulated environment
     sim_env = NetworkEnv(
-        gym.make(env_name),
+        gym.make(env_name, new_step_api=True),
         model_op,
         pendulum_reward,
         pendulum_done,
@@ -1003,7 +1003,7 @@ def METRPO(
 
                 for i in range(num_ensemble_models):
                     sim_m_env = NetworkEnv(
-                        gym.make(env_name),
+                        gym.make(env_name, new_step_api=True),
                         model_op,
                         pendulum_reward,
                         pendulum_done,

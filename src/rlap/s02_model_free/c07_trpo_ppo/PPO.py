@@ -83,7 +83,7 @@ class StructEnv(gym.Wrapper):
         return self.n_obs.copy()
 
     def step(self, action):
-        ob, reward, done, info = self.env.step(action)
+        ob, reward, done, trunc, info = self.env.step(action)
         self.rew_episode += reward
         self.len_episode += 1
         return ob, reward, done, info
@@ -196,7 +196,7 @@ def PPO(
     tf.reset_default_graph()
 
     # Create some environments to collect the trajectories
-    envs = [StructEnv(gym.make(env_name)) for _ in range(number_envs)]
+    envs = [StructEnv(gym.make(env_name)) for _ in range(number_envs, new_step_api=True)]
 
     obs_dim = envs[0].observation_space.shape
 

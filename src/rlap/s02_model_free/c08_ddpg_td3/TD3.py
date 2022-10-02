@@ -140,9 +140,9 @@ def TD3(
 ):
 
     # Create an environment for training
-    env = gym.make(env_name)
+    env = gym.make(env_name,new_step_api=True)
     # Create an environment for testing the actor
-    env_test = gym.make(env_name)
+    env_test = gym.make(env_name, new_step_api=True)
 
     tf.reset_default_graph()
 

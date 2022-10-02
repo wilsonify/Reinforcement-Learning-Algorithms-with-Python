@@ -105,7 +105,7 @@ def REINFORCE(
     """
     tf.compat.v1.reset_default_graph()
 
-    env = gym.make(env_name)
+    env = gym.make(env_name, new_step_api=True)
 
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.n

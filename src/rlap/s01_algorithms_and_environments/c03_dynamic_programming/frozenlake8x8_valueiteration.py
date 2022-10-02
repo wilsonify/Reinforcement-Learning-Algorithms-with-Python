@@ -70,7 +70,7 @@ def run_episodes(env, nA, V, num_games=100):
 
 def main():
     # create the environment
-    env = gym.make("FrozenLake-v1")
+    env = gym.make("FrozenLake-v1", new_step_api=True)
     # enwrap it to have additional information from it
     env = env.unwrapped
     pprint(env)

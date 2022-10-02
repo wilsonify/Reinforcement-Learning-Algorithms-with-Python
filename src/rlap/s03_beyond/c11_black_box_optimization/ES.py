@@ -67,7 +67,7 @@ def worker(
     output_queue,
 ):
 
-    env = gym.make(env_name)
+    env = gym.make(env_name, new_step_api=True)
     obs_dim = env.observation_space.shape[0]
     act_dim = env.action_space.shape[0]
 

@@ -56,7 +56,7 @@ import tensorflow as tf
 from keras import layers
 
 eps = 0.00001  # np.finfo(np.float32).eps.item()  # Small epsilon value for stabilizing division operations
-env = gym.make("CartPole-v0", new_step_api=True, )  # Create the environment
+env = gym.make("CartPole-v0", new_step_api=True)  # Create the environment
 
 
 class ActorCritic(tf.keras.Model):
@@ -325,35 +325,25 @@ def train_step(
 
 
 def render_episode(env: gym.Env, model: tf.keras.Model, max_steps: int):
-    # + [markdown] id="ru8BEwS1EmAv"
-    # ## Visualization
-    #
-    # After training, it would be good to visualize how the model performs in the environment. You can run the cells below to generate a GIF animation of one episode run of the model. Note that additional packages need to be installed for OpenAI Gym to render the environment's images correctly in Colab.
-
-    # + id="qbIMMkfmRHyC"
-    # Render an episode and save as a GIF file
+    """
+    Render an episode and save as a GIF file
+    After training,
+    it would be good to visualize how the model performs in the environment.
+    You can run the cells below to generate a GIF animation of one episode run of the model.
+    """
     screen = env.render(mode='rgb_array')
-    im = Image.fromarray(screen)
-
-    images = [im]
-
+    images = []
     state = tf.constant(env.reset(), dtype=tf.float32)
     for i in range(1, max_steps + 1):
         state = tf.expand_dims(state, 0)
         action_probs, _ = model(state)
         action = np.argmax(np.squeeze(action_probs))
-
-        state, _, done, _ = env.step(action)
+        state, _, done, trunc, _ = env.step(action)
         state = tf.constant(state, dtype=tf.float32)
-
-        # Render screen every 10 steps
-        if i % 10 == 0:
-            screen = env.render(mode='rgb_array')
-            images.append(Image.fromarray(screen))
-
+        if i % 10 == 0:  # Render screen every 10 steps
+            env.render(mode='human')
         if done:
             break
-
     return images
 
 

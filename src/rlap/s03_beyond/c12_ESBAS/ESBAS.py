@@ -275,10 +275,10 @@ def ESBAS(
     tf.reset_default_graph()
 
     # Create the environment both for train and test
-    env = gym.make(env_name)
+    env = gym.make(env_name, new_step_api=True)
     # Add a monitor to the test env to store the videos
     env_test = gym.wrappers.Monitor(
-        gym.make(env_name),
+        gym.make(env_name, new_step_api=True),
         "VIDEOS/TEST_VIDEOS" + env_name + str(current_milli_time()),
         force=True,
         video_callable=lambda x: x % 20 == 0,

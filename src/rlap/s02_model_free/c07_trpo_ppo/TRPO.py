@@ -206,7 +206,7 @@ class StructEnv(gym.Wrapper):
         return self.n_obs.copy()
 
     def step(self, action):
-        ob, reward, done, info = self.env.step(action)
+        ob, reward, done, trunc, info = self.env.step(action)
         self.total_rew += reward
         self.len_episode += 1
         return ob, reward, done, info
@@ -258,7 +258,7 @@ def TRPO(
     tf.reset_default_graph()
 
     # Create a few environments to collect the trajectories
-    envs = [StructEnv(gym.make(env_name)) for _ in range(number_envs)]
+    envs = [StructEnv(gym.make(env_name)) for _ in range(number_envs, new_step_api=True)]
 
     low_action_space = envs[0].action_space.low
     high_action_space = envs[0].action_space.high
